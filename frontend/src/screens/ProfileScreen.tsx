@@ -1,84 +1,113 @@
-import {StyleSheet, View, BackHandler, Alert} from 'react-native';
+import {StyleSheet, View, BackHandler, Text, Alert, Image} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {PRIMARY_COLOR} from '../helper/Theme';
 import ActivityOverview from '../components/ActivityOverview';
 import {Tabs, MaterialTabBar} from 'react-native-collapsible-tab-view';
 import ArticleCard from '../components/ArticleCard';
+import {useSelector} from 'react-redux';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import ProfileHeader from '../components/ProfileHeader';
-import {articles} from '../helper/Utils';
-import {getMethodCallwithToken} from '../helper/CallAPI';
-import {BASE_URL, GET_PROFILE_API} from '../helper/APIUtils';
-import {Article, ProfileScreenProps, User} from '../type';
-
-// Sample article data
+import {GET_PROFILE_API} from '../helper/APIUtils';
+import {ArticleData, ProfileScreenProps, User} from '../type';
+import {useQuery} from '@tanstack/react-query';
+import axios from 'axios';
+import Loader from '../components/Loader';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ProfileScreen = ({navigation}: ProfileScreenProps) => {
-  const [userData, setUserData] = useState<User>();
-  const auth_token = '';
-  const getUserProfileData = async () => {
-    const data = await getMethodCallwithToken(
-      `${BASE_URL + GET_PROFILE_API}`,
-      auth_token,
-    );
-    setUserData(data?.profile);
-  };
-  useEffect(() => {
-    getUserProfileData();
-  }, []);
+  const {user_id, user_token} = useSelector((state: any) => state.user);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  //const fallback_profile = require('../assets/avatar.jpg');
+  //const user_fallback_profile = Image.resolveAssetSource(fallback_profile).uri;
 
-  // Handle back button press to show a confirmation alert before exiting the app
-  useEffect(
-    () =>
-      navigation.addListener('beforeRemove', e => {
-        e.preventDefault();
-        Alert.alert(
-          'Warning',
-          'Do you want to exit',
-          [
-            {text: 'No', onPress: () => null},
-            {text: 'Yes', onPress: () => BackHandler.exitApp()},
-          ],
-          {cancelable: true},
-        );
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+  //console.log('user fallback profile', user_fallback_profile);
+
+  const {
+    data: user,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['get-profile'],
+    queryFn: async () => {
+      const response = await axios.get(`${GET_PROFILE_API}`, {
+        headers: {
+          Authorization: `Bearer ${user_token}`,
+        },
+      });
+      return response.data.profile as User;
+    },
+  });
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', e => {
+      e.preventDefault();
+      Alert.alert(
+        'Warning',
+        'Do you want to exit',
+        [
+          {text: 'No', onPress: () => null},
+          {text: 'Yes', onPress: () => BackHandler.exitApp()},
+        ],
+        {cancelable: true},
+      );
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const isDoctor = user !== undefined ? user.isDoctor : false;
+  const bottomBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    refetch();
+    setRefreshing(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
   );
 
-  const isDoctor = userData?.isDoctor!; // Example flag to indicate if the user is a doctor
-  const bottomBarHeight = useBottomTabBarHeight(); // Get the bottom tab bar height
-  const insets = useSafeAreaInsets(); // Get safe area insets
-  // Memoized function to render each article item
-
-  const renderItem = useCallback(({item}: {item: Article}) => {
-    return <ArticleCard item={item} navigation={navigation} />;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  // Function to render the header
+  const renderItem = useCallback(
+    ({item}: {item: ArticleData}) => {
+      return (
+        <ArticleCard item={item} navigation={navigation} success={onRefresh} />
+      );
+    },
+    [navigation, onRefresh],
+  );
 
   const renderHeader = () => {
+    if (user === undefined) {
+      return null;
+    } // Safeguard to prevent rendering if user is undefined
+
     return (
       <ProfileHeader
         isDoctor={isDoctor}
-        username={userData?.user_name || ''}
-        userhandle={userData?.user_handle || ''}
-        profileImg={userData?.Profile_image || ''}
-        articlesPosted={userData?.articles.length || 0}
-        articlesSaved={userData?.savedArticles.length || 0}
-        userPhoneNumber={
-          isDoctor ? userData?.contact_detail?.phone_no || '' : ''
+        username={user.user_name || ''}
+        userhandle={user.user_handle || ''}
+        profileImg={
+          user.Profile_image ||
+          'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'
         }
-        userEmailID={isDoctor ? userData?.contact_detail?.email_id || '' : ''}
-        specialization={userData?.specialization || ''}
-        experience={userData?.Years_of_experience || 0}
-        qualification={userData?.qualification || ''}
+        articlesPosted={user.articles ? user.articles.length : 0}
+        articlesSaved={user.savedArticles ? user.savedArticles.length : 0}
+        userPhoneNumber={isDoctor ? user.contact_detail?.phone_no || '' : ''}
+        userEmailID={isDoctor ? user.contact_detail?.email_id || '' : ''}
+        specialization={user.specialization || ''}
+        experience={user.Years_of_experience || 0}
+        qualification={user.qualification || ''}
         navigation={navigation}
+        other={true}
+        followers={user ? user.followerCount : 0}
+        followings={user ? user.followingCount : 0}
       />
     );
   };
-  // Function to render the custom tab bar
 
   const renderTabBar = props => {
     return (
@@ -93,6 +122,15 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
       />
     );
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Loader />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={[styles.innerContainer, {paddingTop: insets.top}]}>
@@ -112,27 +150,39 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
           {/* Tab 2 */}
           <Tabs.Tab name="My Articles">
             <Tabs.FlatList
-              data={articles}
+              data={user !== undefined ? user.articles : []}
               renderItem={renderItem}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={[
                 styles.flatListContentContainer,
                 {paddingBottom: bottomBarHeight + 15},
               ]}
-              keyExtractor={item => item?.id}
+              keyExtractor={item => item?._id}
+              refreshing={refreshing}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.message}>No Article Found</Text>
+                </View>
+              }
             />
           </Tabs.Tab>
           {/* Tab 3 */}
           <Tabs.Tab name="Saved Articles">
             <Tabs.FlatList
-              data={articles}
+              data={user !== undefined ? user.savedArticles : []}
               renderItem={renderItem}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={[
                 styles.flatListContentContainer,
                 {paddingBottom: bottomBarHeight + 15},
               ]}
-              keyExtractor={item => item?.id}
+              keyExtractor={item => item?._id}
+              refreshing={refreshing}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.message}>No Article Found</Text>
+                </View>
+              }
             />
           </Tabs.Tab>
         </Tabs.Container>
@@ -140,7 +190,9 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
     </View>
   );
 };
+
 export default ProfileScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -180,5 +232,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     shadowOffset: {width: 0, height: 0},
     shadowColor: 'white',
+  },
+  message: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
