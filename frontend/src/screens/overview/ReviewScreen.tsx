@@ -11,11 +11,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {
-  BUTTON_COLOR,
-  ON_PRIMARY_COLOR,
-  PRIMARY_COLOR,
-} from '../../helper/Theme';
+import {ON_PRIMARY_COLOR, PRIMARY_COLOR} from '../../helper/Theme';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ArticleData, ReviewScreenProp, User} from '../../type';
@@ -56,7 +52,6 @@ const ReviewScreen = ({navigation, route}: ReviewScreenProp) => {
   const [comments, setComments] = useState<Comment[]>([]);
 
   const flatListRef = useRef<FlatList<Comment>>(null);
- 
 
   const webViewRef = useRef<WebView>(null);
 
@@ -143,6 +138,7 @@ const ReviewScreen = ({navigation, route}: ReviewScreenProp) => {
     };
   }, [socket, route.params.articleId]);
 
+  /*
   const commentTests = [
     {
       _id: '1',
@@ -247,6 +243,7 @@ const ReviewScreen = ({navigation, route}: ReviewScreenProp) => {
       isNote: false,
     },
   ];
+  */
 
   useEffect(() => {
     if (article) {
@@ -477,20 +474,27 @@ const ReviewScreen = ({navigation, route}: ReviewScreenProp) => {
             </View>
           )}
 
-        {article?.reviewer_id === null ? (
+          {
+            /**
+             * {article?.reviewer_id === null ? (
           <View style={{padding: wp(6), marginTop: hp(4.5)}}>
-            <Text style={{...styles.authorName, marginBottom:5}}> Test Conversations</Text>
+            <Text style={{...styles.authorName, marginBottom: 5}}>
+              {' '}
+              Test Conversations
+            </Text>
             {commentTests?.map((item, index) => (
               <ReviewItem key={index} item={item} />
             ))}
           </View>
-        ):(
+        )
+             */
+          } 
           <View style={{padding: wp(6), marginTop: hp(4.5)}}>
-          {comments?.map((item, index) => (
-            <ReviewItem key={index} item={item} />
-          ))}
-        </View> 
-        )}
+            {comments?.map((item, index) => (
+              <ReviewItem key={index} item={item} />
+            ))}
+          </View>
+        
       </ScrollView>
       <View
         style={[
@@ -735,7 +739,7 @@ const styles = StyleSheet.create({
     //padding: hp(1),
     borderColor: '#000',
     borderWidth: 0.5,
-   // padding: wp(6),
+    // padding: wp(6),
     marginHorizontal: wp(4),
   },
   editor: {
