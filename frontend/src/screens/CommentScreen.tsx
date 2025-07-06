@@ -284,7 +284,7 @@ const CommentScreen = ({navigation, route}: CommentScreenProp) => {
       // Emit the new comment to the backend via socket
       socket.emit('comment', newCommentObj);
 
-      setNewComment(''); // Clear the input field after submitting
+      setNewComment(''); 
     }
   };
 
@@ -293,6 +293,7 @@ const CommentScreen = ({navigation, route}: CommentScreenProp) => {
       articleId: articleId.toString(),
       authorId: authorId,
       commentId: commentId,
+      podcastId: null,
     });
   };
   if (commentLoading) {
