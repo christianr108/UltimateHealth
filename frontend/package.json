@@ -108,7 +108,7 @@
     "react-redux": "^9.2.0",
     "socket.io-client": "^4.8.1",
     "tamagui": "^1.135.6",
-    "zod": "^4.4.3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@react-native/jest-preset": "^0.86.0",
