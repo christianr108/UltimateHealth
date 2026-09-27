@@ -13094,7 +13094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"paths-js@npm:^0.4.10":
+"paths-js@npm:^0.4.11":
   version: 0.4.11
   resolution: "paths-js@npm:0.4.11"
   checksum: 10c0/4ac4f2ecc3d5a5a3c6e7b6f6e7cfc30857f3055b870e353cbb77c1967dce23812e15c622ed2df1db26edfa2c881f720ec5031d6a1581fdf2b4c168757217f9b7
@@ -13153,13 +13153,6 @@ __metadata:
   version: 3.4.0
   resolution: "pngjs@npm:3.4.0"
   checksum: 10c0/88ee73e2ad3f736e0b2573722309eb80bd2aa28916f0862379b4fd0f904751b4f61bb6bd1ecd7d4242d331f2b5c28c13309dd4b7d89a9b78306e35122fdc5011
-  languageName: node
-  linkType: hard
-
-"point-in-polygon@npm:^1.0.1":
-  version: 1.1.0
-  resolution: "point-in-polygon@npm:1.1.0"
-  checksum: 10c0/de00419585ee25555d97585b7a23eeb2464a87ef29404264bee55654ca2ecab5a5a99d33e689c07d045faf80091e838f44a1fd130bdd6134493df53114947343
   languageName: node
   linkType: hard
 
@@ -13462,17 +13455,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-chart-kit@npm:^6.12.0":
-  version: 6.12.3
-  resolution: "react-native-chart-kit@npm:6.12.3"
+"react-native-chart-kit@npm:^7.0.4":
+  version: 7.0.4
+  resolution: "react-native-chart-kit@npm:7.0.4"
   dependencies:
-    paths-js: "npm:^0.4.10"
-    point-in-polygon: "npm:^1.0.1"
+    paths-js: "npm:^0.4.11"
   peerDependencies:
-    react: "> 16.7.0"
-    react-native: ">= 0.50.0"
-    react-native-svg: "> 6.4.1"
-  checksum: 10c0/34a3b48b82a07e1e236a95bf828850b7058a4ad2829bafa6793f05c9945f405b2a5d74b805a873d5cfe2edae3c0598aa99fe71420a24c9ce6840aa4ccdd9345d
+    react: ">=19.1.0 <20"
+    react-native: ">=0.81 <1"
+    react-native-svg: ">=15.12.1 <16"
+  bin:
+    chart-kit: bin/chart-kit.mjs
+  checksum: 10c0/eda11431302da9dd266a00b093e11edae209924e3e497be306a47381870508edbda8318b283cd7cb6f940736bb00a1e2ca262426e5d871e9fbe3499e6fdd646e
   languageName: node
   linkType: hard
 
@@ -15501,7 +15495,7 @@ __metadata:
     react-dom: "npm:19.2.3"
     react-hook-form: "npm:^7.78.0"
     react-native: "npm:0.86.2"
-    react-native-chart-kit: "npm:^6.12.0"
+    react-native-chart-kit: "npm:^7.0.4"
     react-native-collapsible-tab-view: "npm:^8.0.1"
     react-native-controlled-mentions: "npm:^3.1.0"
     react-native-element-dropdown: "npm:^2.12.4"
