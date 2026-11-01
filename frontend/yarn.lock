@@ -13642,13 +13642,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.36.4":
-  version: 0.36.5
-  resolution: "react-native-nitro-modules@npm:0.36.5"
+"react-native-nitro-modules@npm:^0.37.1":
+  version: 0.37.1
+  resolution: "react-native-nitro-modules@npm:0.37.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/c7b2133f924967b68c0f0f678b5a5dce1a784a7e22f57ebf203ef5803a5c9c745b6d4dda8c9bcedd13f7c5ca53a8707784e98572a2ca8a864fe0b905163a34b5
+  checksum: 10c0/5178f2ee891cb746b084fdf382b6020e366d8e4a81922a3f1d60a453d34fca6ebb1b00c4c28785c36385bc182ab76a30cba70441c39abbc25d3ad54db612e46e
   languageName: node
   linkType: hard
 
@@ -15513,7 +15513,7 @@ __metadata:
     react-native-image-picker: "npm:^8.2.1"
     react-native-keyboard-controller: "npm:1.21.9"
     react-native-mmkv: "npm:^4.3.1"
-    react-native-nitro-modules: "npm:^0.36.4"
+    react-native-nitro-modules: "npm:^0.37.1"
     react-native-pager-view: "npm:8.0.2"
     react-native-paper: "npm:^5.14.5"
     react-native-pell-rich-editor: "npm:^1.10.0"
